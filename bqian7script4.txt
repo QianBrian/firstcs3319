@@ -1,0 +1,30 @@
+# File 4 - Brian Qian, 250962066
+USE bqian7assign2db;
+
+# disable safe mode to allow deletes
+SET SQL_SAFE_UPDATES = 0;
+
+# delete doctors that were licensed before a date
+SELECT * FROM doctors;
+DELETE FROM doctors WHERE datelicensed < DATE '1965-01-01';
+SELECT 'ERROR 1451 occurs. This delete causes cascading delete to hospital table, where the assignedhead column must NOT be null;
+-- ERROR 1451. Cannot delete parent row. Because deleting doctors would cause a cascade delete in the hospitals table, MySQL does not allow for this delete to occur.
+-- In the hospitals table, it requires an appointed head doctor that has a NOT NULL constraint. The above query refers to a doctor head in the hospital table.
+SELECT * FROM doctors;
+
+# create a view that shows all the patients first names and last names who are treated by the heads of hospitals, that were made heads after Dec 31, 1995. In this view, also display the doctor's last name and the hospital name
+CREATE OR REPLACE VIEW v_patient_treated_recent_heads AS
+SELECT p.firstname AS patient_first_name, p.lastname AS patient_last_name, d.lastname AS doctor_last_name, h.hospitalname AS hospital_name FROM patients p JOIN assignedto a ON p.ohipnumber=a.patient JOIN doctors d ON a.doctorassigned=d.licensenumber 
+JOIN hospitals h ON d.licensenumber=h.assignedhead;
+
+# delete all rows from doctors and assignedto associated with the last name Clooney
+SELECT * FROM doctors;
+SELECT * FROM assignedto;
+DELETE FROM doctors WHERE lastname='Clooney';
+SELECT * FROM doctors;
+SELECT * FROM assignedto;
+
+# delete all surgeons
+DELETE FROM doctors WHERE speciality='Surgeon';
+-- this delete command did not delete the rows because one of the doctors with the speciality of 'Surgeon' is a head of a hospital. Every hospital MUST have a head, and therefore cannot be deleted. 
+

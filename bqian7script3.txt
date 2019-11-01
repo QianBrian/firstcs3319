@@ -1,0 +1,52 @@
+# File 3 - Queries - Brian Qian, 250962066
+USE bqian7assign2db;
+
+-- Query 1 - show the last names of all the patients
+SELECT lastname FROM patients;
+
+-- Query 2 - show the last names of all the patients with no repeats
+SELECT DISTINCT lastname FROM patients;
+
+-- Query 3 - show all the data in the Doctor table, but show them in order of their last names from A to Z
+SELECT * FROM doctors
+ORDER BY lastname ASC;
+
+-- Query 4 - show the name and id of all hospitals that have over 1500 beds
+SELECT hospitalname, hospitalcode FROM hospitals 
+WHERE numberofbeds > 1500;
+
+-- Query 5 - list the last name and first name of all the doctors who work at St. Josephs Hospital (use the hospital name as the look up not the key)
+SELECT d.lastname, d.firstname FROM doctors d 
+JOIN hospitals h ON d.assignedhospital=h.hospitalcode 
+WHERE h.hospitalname='St. Joseph';
+
+-- Query 6 - list the first name and last name of all patients whose last name begins with a "G"
+SELECT firstname, lastname FROM patients 
+WHERE lastname LIKE 'G%';
+
+-- Query 7 - list the first name and last name of all patients who are treated by doctor with the last name Clooney
+SELECT p.firstname, p.lastname FROM patients p 
+JOIN assignedto a ON p.ohipnumber=a.patient 
+JOIN doctors d ON d.licensenumber=a.doctorassigned 
+WHERE d.lastname='Clooney';
+
+-- Query 8 - list the hospital name, city and the last name of the head doctor of that hospital
+SELECT h.hospitalname, h.cityname, d.lastname FROM hospitals h JOIN doctors d ON h.assignedhead=d.licensenumber;
+
+-- Query 9 - find the total number of beds for all the hospitals and give the result a nice title like "Total Number of Beds"
+SELECT SUM(numberofbeds) AS 'Total Number of Beds' FROM hospitals; # I'm assuming the question is asking me to add all the beds from all hospitals together
+
+-- Query 10 - list the first names of the patient and the first name of the doctor for all patients treated by a head doctor
+SELECT p.firstname, d.firstname FROM patients p 
+JOIN assignedto a ON p.ohipnumber=a.patient 
+JOIN doctors d ON a.doctorassigned=d.licensenumber 
+JOIN hospitals h ON d.licensenumber=h.assignedhead;
+
+-- Query 11 - find all the surgeons (last name and first name) who work at a hospital called Victoria
+SELECT d.lastname, d.firstname FROM doctors d JOIN hospitals h ON d.assignedhospital=h.hospitalcode WHERE h.hospitalname='Victoria' AND d.speciality='Surgeon';
+
+-- Query 12 - find the first name of all doctors who don't treat anyone
+SELECT firstname, lastname FROM doctors WHERE licensenumber NOT IN (SELECT doctorassigned FROM assignedto);
+
+-- Query 13 - find all doctors (last name and first name) who treat MORE than one patient (Hint: you will have to use the key words Group By and Having)
+SELECT d.lastname, d.firstname FROM doctors d JOIN assignedto a ON d.licensenumber=a.doctorassigned GROUP BY a.doctorassigned HAVING COUNT(a.doctorassigned) > 1;

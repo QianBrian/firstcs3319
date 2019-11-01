@@ -1,0 +1,127 @@
+--------------
+SET SQL_SAFE_UPDATES = 0
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+
+--------------
+SELECT * FROM doctors
+--------------
+
++---------------+-----------+------------+--------------+--------------+------------------+
+| licensenumber | firstname | lastname   | speciality   | datelicensed | assignedhospital |
++---------------+-----------+------------+--------------+--------------+------------------+
+| AV10          | Stephen   | Strange    | Surgeon      | 1997-07-25   | ABC              |
+| GD56          | Joey      | Shabado    | Podiatrist   | 1960-06-24   | BBC              |
+| HT45          | Ross      | Clooney    | Surgeon      | 1987-06-20   | DDE              |
+| JK78          | Mandy     | Webster    | Surgeon      | 1990-08-08   | BBC              |
+| RD34          | Bernie    | Kavorikian | Urologist    | 1980-09-09   | BBC              |
+| SE66          | Colleen   | Aziz       | Surgeon      | 1989-08-24   | ABC              |
+| YT67          | Ben       | Spock      | Pediatrician | 1955-02-20   | DDE              |
++---------------+-----------+------------+--------------+--------------+------------------+
+7 rows in set (0.00 sec)
+
+ERROR 1451 (23000) at line 9: Cannot delete or update a parent row: a foreign key constraint fails (`bqian7assign2db`.`hospitals`, CONSTRAINT `hospitals_ibfk_1` FOREIGN KEY (`assignedhead`) REFERENCES `doctors` (`licensenumber`))
+ERROR 1064 (42000) at line 10: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'last name and the hospital name
+CREATE OR REPLACE VIEW v_patient_treated_recent_' at line 1
+--------------
+DELETE FROM doctors WHERE datelicensed < DATE '1965-01-01'
+--------------
+
+--------------
+SELECT 'ERROR 1451 occurs. This delete causes cascading delete to hospital table, where the assignedhead column must NOT be null;
+-- ERROR 1451. Cannot delete parent row. Because deleting doctors would cause a cascade delete in the hospitals table, MySQL does not allow for this delete to occur.
+-- In the hospitals table, it requires an appointed head doctor that has a NOT NULL constraint. The above query refers to a doctor head in the hospital table.
+SELECT * FROM doctors;
+
+# create a view that shows all the patients first names and last names who are treated by the heads of hospitals, that were made heads after Dec 31, 1995. In this view, also display the doctor's last name and the hospital name
+CREATE OR REPLACE VIEW v_patient_treated_recent_heads AS
+SELECT p.firstname AS patient_first_name, p.lastname AS patient_last_name, d.lastname AS doctor_last_name, h.hospitalname AS hospital_name FROM patients p JOIN assignedto a ON p.ohipnumber=a.patient JOIN doctors d ON a.doctorassigned=d.licensenumber 
+JOIN hospitals h ON d.licensenumber=h.assignedhead
+--------------
+
+--------------
+SELECT * FROM doctors
+--------------
+
++---------------+-----------+------------+--------------+--------------+------------------+
+| licensenumber | firstname | lastname   | speciality   | datelicensed | assignedhospital |
++---------------+-----------+------------+--------------+--------------+------------------+
+| AV10          | Stephen   | Strange    | Surgeon      | 1997-07-25   | ABC              |
+| GD56          | Joey      | Shabado    | Podiatrist   | 1960-06-24   | BBC              |
+| HT45          | Ross      | Clooney    | Surgeon      | 1987-06-20   | DDE              |
+| JK78          | Mandy     | Webster    | Surgeon      | 1990-08-08   | BBC              |
+| RD34          | Bernie    | Kavorikian | Urologist    | 1980-09-09   | BBC              |
+| SE66          | Colleen   | Aziz       | Surgeon      | 1989-08-24   | ABC              |
+| YT67          | Ben       | Spock      | Pediatrician | 1955-02-20   | DDE              |
++---------------+-----------+------------+--------------+--------------+------------------+
+7 rows in set (0.00 sec)
+
+--------------
+SELECT * FROM assignedto
+--------------
+
++-----------+----------------+
+| patient   | doctorassigned |
++-----------+----------------+
+| 069971042 | AV10           |
+| 110112113 | GD56           |
+| 333444555 | GD56           |
+| 667766777 | GD56           |
+| 111222111 | HT45           |
+| 111222333 | HT45           |
+| 444555666 | HT45           |
+| 667766777 | HT45           |
+| 111222333 | JK78           |
+| 444555666 | JK78           |
+| 667766777 | JK78           |
+| 111222333 | SE66           |
++-----------+----------------+
+12 rows in set (0.00 sec)
+
+--------------
+DELETE FROM doctors WHERE lastname='Clooney'
+--------------
+
+Query OK, 1 row affected (0.04 sec)
+
+--------------
+SELECT * FROM doctors
+--------------
+
++---------------+-----------+------------+--------------+--------------+------------------+
+| licensenumber | firstname | lastname   | speciality   | datelicensed | assignedhospital |
++---------------+-----------+------------+--------------+--------------+------------------+
+| AV10          | Stephen   | Strange    | Surgeon      | 1997-07-25   | ABC              |
+| GD56          | Joey      | Shabado    | Podiatrist   | 1960-06-24   | BBC              |
+| JK78          | Mandy     | Webster    | Surgeon      | 1990-08-08   | BBC              |
+| RD34          | Bernie    | Kavorikian | Urologist    | 1980-09-09   | BBC              |
+| SE66          | Colleen   | Aziz       | Surgeon      | 1989-08-24   | ABC              |
+| YT67          | Ben       | Spock      | Pediatrician | 1955-02-20   | DDE              |
++---------------+-----------+------------+--------------+--------------+------------------+
+6 rows in set (0.00 sec)
+
+--------------
+SELECT * FROM assignedto
+--------------
+
++-----------+----------------+
+| patient   | doctorassigned |
++-----------+----------------+
+| 069971042 | AV10           |
+| 110112113 | GD56           |
+| 333444555 | GD56           |
+| 667766777 | GD56           |
+| 111222333 | JK78           |
+| 444555666 | JK78           |
+| 667766777 | JK78           |
+| 111222333 | SE66           |
++-----------+----------------+
+8 rows in set (0.00 sec)
+
+ERROR 1451 (23000) at line 28: Cannot delete or update a parent row: a foreign key constraint fails (`bqian7assign2db`.`hospitals`, CONSTRAINT `hospitals_ibfk_1` FOREIGN KEY (`assignedhead`) REFERENCES `doctors` (`licensenumber`))
+--------------
+DELETE FROM doctors WHERE speciality='Surgeon'
+--------------
+
+Bye

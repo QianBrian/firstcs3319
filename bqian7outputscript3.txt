@@ -1,0 +1,189 @@
+--------------
+SELECT lastname FROM patients
+--------------
+
++----------+
+| lastname |
++----------+
+| Qian     |
+| Gellar   |
+| Brown    |
+| Green    |
+| Gellar   |
+| Gellar   |
+| Bing     |
++----------+
+7 rows in set (0.00 sec)
+
+--------------
+SELECT DISTINCT lastname FROM patients
+--------------
+
++----------+
+| lastname |
++----------+
+| Qian     |
+| Gellar   |
+| Brown    |
+| Green    |
+| Bing     |
++----------+
+5 rows in set (0.00 sec)
+
+--------------
+SELECT * FROM doctors
+ORDER BY lastname ASC
+--------------
+
++---------------+-----------+------------+--------------+--------------+------------------+
+| licensenumber | firstname | lastname   | speciality   | datelicensed | assignedhospital |
++---------------+-----------+------------+--------------+--------------+------------------+
+| SE66          | Colleen   | Aziz       | Surgeon      | 1989-08-24   | ABC              |
+| HT45          | Ross      | Clooney    | Surgeon      | 1987-06-20   | DDE              |
+| RD34          | Bernie    | Kavorikian | Urologist    | 1980-09-09   | BBC              |
+| GD56          | Joey      | Shabado    | Podiatrist   | 1960-06-24   | BBC              |
+| YT67          | Ben       | Spock      | Pediatrician | 1955-02-20   | DDE              |
+| AV10          | Stephen   | Strange    | Surgeon      | 1997-07-25   | ABC              |
+| JK78          | Mandy     | Webster    | Surgeon      | 1990-08-08   | BBC              |
++---------------+-----------+------------+--------------+--------------+------------------+
+7 rows in set (0.01 sec)
+
+--------------
+SELECT hospitalname, hospitalcode FROM hospitals 
+WHERE numberofbeds > 1500
+--------------
+
++--------------+--------------+
+| hospitalname | hospitalcode |
++--------------+--------------+
+| Victoria     | ABC          |
++--------------+--------------+
+1 row in set (0.00 sec)
+
+--------------
+SELECT d.lastname, d.firstname FROM doctors d 
+JOIN hospitals h ON d.assignedhospital=h.hospitalcode 
+WHERE h.hospitalname='St. Joseph'
+--------------
+
++------------+-----------+
+| lastname   | firstname |
++------------+-----------+
+| Shabado    | Joey      |
+| Webster    | Mandy     |
+| Kavorikian | Bernie    |
++------------+-----------+
+3 rows in set (0.00 sec)
+
+--------------
+SELECT firstname, lastname FROM patients 
+WHERE lastname LIKE 'G%'
+--------------
+
++-----------+----------+
+| firstname | lastname |
++-----------+----------+
+| Bill      | Gellar   |
+| Jon       | Green    |
+| Colleen   | Gellar   |
+| Sean      | Gellar   |
++-----------+----------+
+4 rows in set (0.00 sec)
+
+--------------
+SELECT p.firstname, p.lastname FROM patients p 
+JOIN assignedto a ON p.ohipnumber=a.patient 
+JOIN doctors d ON d.licensenumber=a.doctorassigned 
+WHERE d.lastname='Clooney'
+--------------
+
++-----------+----------+
+| firstname | lastname |
++-----------+----------+
+| Suzi      | Brown    |
+| Jon       | Green    |
+| Sean      | Gellar   |
+| Scotty    | Bing     |
++-----------+----------+
+4 rows in set (0.00 sec)
+
+--------------
+SELECT h.hospitalname, h.cityname, d.lastname FROM hospitals h JOIN doctors d ON h.assignedhead=d.licensenumber
+--------------
+
++--------------+----------+----------+
+| hospitalname | cityname | lastname |
++--------------+----------+----------+
+| Victoria     | London   | Aziz     |
+| St. Joseph   | London   | Shabado  |
+| Victoria     | Victoria | Spock    |
++--------------+----------+----------+
+3 rows in set (0.00 sec)
+
+--------------
+SELECT SUM(numberofbeds) AS 'Total Number of Beds' FROM hospitals
+--------------
+
++----------------------+
+| Total Number of Beds |
++----------------------+
+|                 3800 |
++----------------------+
+1 row in set (0.00 sec)
+
+--------------
+SELECT p.firstname, d.firstname FROM patients p 
+JOIN assignedto a ON p.ohipnumber=a.patient 
+JOIN doctors d ON a.doctorassigned=d.licensenumber 
+JOIN hospitals h ON d.licensenumber=h.assignedhead
+--------------
+
++-----------+-----------+
+| firstname | firstname |
++-----------+-----------+
+| Bill      | Joey      |
+| Colleen   | Joey      |
+| Scotty    | Joey      |
+| Jon       | Colleen   |
++-----------+-----------+
+4 rows in set (0.00 sec)
+
+--------------
+SELECT d.lastname, d.firstname FROM doctors d JOIN hospitals h ON d.assignedhospital=h.hospitalcode WHERE h.hospitalname='Victoria' AND d.speciality='Surgeon'
+--------------
+
++----------+-----------+
+| lastname | firstname |
++----------+-----------+
+| Strange  | Stephen   |
+| Clooney  | Ross      |
+| Aziz     | Colleen   |
++----------+-----------+
+3 rows in set (0.00 sec)
+
+--------------
+SELECT firstname, lastname FROM doctors WHERE licensenumber NOT IN (SELECT doctorassigned FROM assignedto)
+--------------
+
++-----------+------------+
+| firstname | lastname   |
++-----------+------------+
+| Bernie    | Kavorikian |
+| Ben       | Spock      |
++-----------+------------+
+2 rows in set (0.00 sec)
+
+--------------
+SELECT d.lastname, d.firstname FROM doctors d JOIN assignedto a ON d.licensenumber=a.doctorassigned GROUP BY a.doctorassigned HAVING COUNT(a.doctorassigned) > 1
+--------------
+
++----------+-----------+
+| lastname | firstname |
++----------+-----------+
+| Shabado  | Joey      |
+| Clooney  | Ross      |
+| Webster  | Mandy     |
++----------+-----------+
+3 rows in set (0.00 sec)
+
+Bye
